@@ -139,18 +139,32 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private GameObject m_sequenceContainer;
 	[SerializeField] private GameObject m_deckContainer;
 	[SerializeField] private GameObject m_enemyDeckContainer;
+	
+	[SerializeField] private GameObject m_turnIndicator;
 
 	private int currentTurn = 1;
-	private int maxTurn = 10;
+	private int maxTurn = 5;
+	private int currentCycle = 1;
+	private int maxCycle = 4;
 	private bool isPlayerTurn = true;
 	private List<Card> m_cardSequence = new();
 	private float m_targetNumber = 0;
 	private float m_currentNumber = 0;
+	private float m_biasNumber = 10;
 	private EnemyInfo m_enemyInfo = new("Frostbite", 100, new List<Card>()
 	{
 		new NumberCard { Number = 1 },
 		new NumberCard { Number = 2 },
 		new NumberCard { Number = 3 },
+		new DegreeCard { Type = DegreeType.PI2 },
+		new OperatorCard { Type = OperatorType.Sin },
+		new OperatorCard { Type = OperatorType.Divide },
+		new OperatorCard { Type = OperatorType.Sqrt },
+		new OperatorCard { Type = OperatorType.Floor },
+		new OperatorCard { Type = OperatorType.BracketL },
+		new OperatorCard { Type = OperatorType.BracketR },
+		new OperatorCard { Type = OperatorType.BracketL },
+		new OperatorCard { Type = OperatorType.BracketR }
 	});
 
 	private List<CardObject> m_cardListInDeck = new();
@@ -236,6 +250,7 @@ public class BattleController : MonoBehaviour
 
 		var cardInDeck = m_cardListInEnemyDeck.First(obj => obj.card == card);
 		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
+		cardInDeck.transform.localScale = Vector3.one;
 		m_cardListInEnemyDeck.Remove(cardInDeck);
 		m_cardListInSequence.Add(cardInDeck);
 
@@ -244,29 +259,80 @@ public class BattleController : MonoBehaviour
 		return true;
 	}
 
+	public bool NextCycle()
+	{
+		currentTurn = 1;
+		isPlayerTurn = currentCycle % 2 != 1;
+		
+		foreach (var cardObject in m_cardListInSequence)
+		{
+			Destroy(cardObject.gameObject);
+		}
+		
+		m_cardListInSequence.Clear();
+		
+		currentCycle++;
+		
+		if (currentCycle > maxCycle)
+		{
+			EndGame();
+			return false;
+		}
+		
+		UpdateTurnRelatedInfo();
+
+		return true;
+	}
+
 	public bool SwitchTurn()
 	{
 		currentTurn++;
 		if (currentTurn > maxTurn)
 		{
-			EndGame();
+			ApplyDamage();
+			NextCycle();
 			return false;
 		}
 
 		isPlayerTurn = !isPlayerTurn;
-		m_turnText.text = (isPlayerTurn ? "Player Turn" : "Enemy Turn  ") + currentTurn + " / " + maxTurn;
-
+		UpdateTurnRelatedInfo();
+		
 		return true;
+	}
+
+	public void UpdateTurnRelatedInfo()
+	{
+		m_turnText.text = 
+			"Cycle " + currentCycle + " - " + 
+			(isPlayerTurn ? "Player Turn" : "Enemy Turn  ")
+			+ currentTurn + " / " + maxTurn;
+		
+		m_turnIndicator.transform.GetChild(0).transform.gameObject.SetActive(isPlayerTurn);
+		m_turnIndicator.transform.GetChild(1).transform.gameObject.SetActive(!isPlayerTurn);
+	}
+
+	public void ApplyDamage()
+	{
+		if (Mathf.Abs(m_targetNumber - m_currentNumber) <= m_biasNumber)
+		{
+			// Player win.
+			var v = Mathf.Lerp(20, 5, Mathf.Abs(m_targetNumber - m_currentNumber) / m_biasNumber);
+			SetEnemyHP(GetEnemyHP() - Mathf.FloorToInt(v));
+		}
+		else
+		{
+			SetPlayerHP(GetPlayerHP() - 10);
+		}
 	}
 
 	public void EndGame()
 	{
-		Debug.Log(Mathf.Abs(m_targetNumber - m_currentNumber) <= 10 ? "Player Win!" : "Player Lose!");
 		SceneManager.LoadScene("Scenes/StageSelect");
 	}
 
 	public bool IsValid(Card newCard)
 	{
+		return true;
 		Card prevCard = m_cardSequence.Count > 0 ? m_cardSequence[^1] : null;
 		if (prevCard == null) return true;
 
@@ -348,8 +414,14 @@ public class BattleController : MonoBehaviour
 		m_playerNameText.text = MasterController.Instance.PlayerInfo.Name;
 	    m_enemyNameText.text = m_enemyInfo.Name;
 
+	    m_targetNumber = Random.Range(0, 101);
+	    m_biasNumber = m_targetNumber / 10.0f;
+        
 		m_targetNumberText.text = m_targetNumber.ToString();
 		m_currentNumberText.text = m_currentNumber.ToString();
+		
+		SetPlayerHP(GetPlayerHP());
+		SetEnemyHP(GetEnemyHP());
 		
 		foreach (var playerCard in MasterController.Instance.PlayerInfo.CardDeck)
 		{
