@@ -21,7 +21,6 @@ public struct EnemyInfo
 
 public class Card
 {
-	
 }
 
 public class BaseCard : Card
@@ -181,6 +180,7 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private Text m_tooltip;
 
 	private bool isReverse = false;
+	private int auto = 0;
 
 	private int currentTurn = 1;
 	private int maxTurn = 11;
@@ -193,17 +193,17 @@ public class BattleController : MonoBehaviour
 	private float m_biasNumber = 20;
 	private EnemyInfo m_enemyInfo = new("Frostbite", 100, new List<Card>()
 	{
-		new NumberCard { Number = 2 },
 		new NumberCard { Number = 4 },
-		new DegreeCard { Type = DegreeType.PI },
 		new OperatorCard { Type = OperatorType.Cos },
-		new OperatorCard { Type = OperatorType.Add },
-		new OperatorCard { Type = OperatorType.Multiply },
 		new OperatorCard { Type = OperatorType.Multiply },
 		new OperatorCard { Type = OperatorType.BracketR },
 		new OperatorCard { Type = OperatorType.Cos },
 		new OperatorCard { Type = OperatorType.Sqrt },
+		new OperatorCard { Type = OperatorType.Multiply },
+		new DegreeCard { Type = DegreeType.PI },
 		new OperatorCard { Type = OperatorType.Round },
+		new OperatorCard { Type = OperatorType.Add },
+		new NumberCard { Number = 2 },
 	});
 
 	private List<CardObject> m_cardListInDeck = new();
@@ -292,7 +292,7 @@ public class BattleController : MonoBehaviour
 		m_cardListInEnemyDeck.Remove(cardInDeck);
 		m_cardListInSequence.Add(cardInDeck);
 
-		m_enemyInfo.CardDeck.Remove(card);
+		// m_enemyInfo.CardDeck.Remove(card);
 		
 		return true;
 	}
@@ -519,12 +519,21 @@ public class BattleController : MonoBehaviour
 		}
 	}
 
+	private IEnumerator DelayedEnemySelect()
+	{
+		yield return new WaitForSeconds(0.4f);
+		var success = EnemyPlaceCard(m_enemyInfo.CardDeck[auto++]);
+		if (success) SwitchTurn();
+	}
+
 	private void OnPlayerCardSelect(Card card)
 	{
 		if (!isPlayerTurn) return;
 		
 		var success = PlaceCard(card);
 		if (success) SwitchTurn();
+
+		StartCoroutine(DelayedEnemySelect());
 	}
 	
 	private void OnEnemyCardSelect(Card card)
