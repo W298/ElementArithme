@@ -22,7 +22,7 @@ public class MasterController
 	public static MasterController Instance => _battleController ??= new MasterController();
 
 	public int currentStageIndex = 0;
-	public PlayerInfo PlayerInfo = new("Hansu", 20, 0,
+	public PlayerInfo PlayerInfo = new("Hansu", 100, 0,
 	new List<Card>() {
 		new NumberCard { Number = 1 },
 		new NumberCard { Number = 2 },
