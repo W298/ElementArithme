@@ -56,7 +56,7 @@ public class StageController : MonoBehaviour
     private GameObject whereAreCharacter;
 
     public GameObject[] buttons;
-    public bool[] isClear;
+    public bool[] stageClearArr;
     public bool[] isEnable;
     public int stageIndex;
     public int eventCount;
@@ -64,6 +64,7 @@ public class StageController : MonoBehaviour
     public GameObject stageRewardCanvas;
     public GameObject eventRewardCanvas;
     public GameObject[] rewardCards;
+    public bool isClear = false;
 
     [SerializeField]
     private Sprite disableStageSprite;
@@ -99,7 +100,7 @@ public class StageController : MonoBehaviour
             if (!isLoad)
             {
                 buttons = new GameObject[stageButton.transform.childCount];
-                isClear = new bool[buttons.Length];
+                stageClearArr = new bool[buttons.Length];
                 isEnable = new bool[buttons.Length];
 
                 if (stageButton != null)
@@ -107,7 +108,7 @@ public class StageController : MonoBehaviour
                     for (int i = 0; i < buttons.Length; i++)
                     {
                         buttons[i] = stageButton.transform.GetChild(i).gameObject;
-                        isClear[i] = false;
+                        stageClearArr[i] = false;
                         isEnable[i] = true;
                     }
                 }
@@ -117,9 +118,10 @@ public class StageController : MonoBehaviour
                 isLoad = true;
             }
         }
-        if(stageIndex != 0)
+        if(isClear)
         {
             stageClear(stageIndex);
+            isClear = false;
         }
 
     }
@@ -142,7 +144,7 @@ public class StageController : MonoBehaviour
 
     public void stageClear(int i)
     {
-        isClear[i-1] = true;
+        stageClearArr[i-1] = true;
         checkStageEnable(i-1);
         Debug.Log("stage clear" + i);
         UpdateStageSprite();
@@ -225,7 +227,7 @@ public class StageController : MonoBehaviour
     {
         stageData = new Dictionary<int, StageData>();
 
-        for(int k = 0; k < buttons.Length; k++)
+        for(int k = 0; k <= buttons.Length; k++)
         {
             SetStageReward(k, (int)Random.Range(5, k * 10));
         }
@@ -311,7 +313,7 @@ public class StageController : MonoBehaviour
     {
         for (int j = 0; j < buttons.Length; j++)
         {
-            if (isClear[j]) buttons[j].GetComponent<StageButton>().changeSprite(clearStageSprite);
+            if (stageClearArr[j]) buttons[j].GetComponent<StageButton>().changeSprite(clearStageSprite);
             if (!isEnable[j]) buttons[j].GetComponent<StageButton>().changeSprite(disableStageSprite);
         }
     }
@@ -338,6 +340,7 @@ public class StageController : MonoBehaviour
     public void SetStageIndex(int i)
     {
         stageIndex = i;
+        MasterController.Instance.currentStageIndex= i;
     }
 
     public void GetCorrentCount(int i)
@@ -399,4 +402,5 @@ public class StageController : MonoBehaviour
             MasterController.Instance.AddCard(rewardCards[j].GetComponent<CardObject>().card);
         }
     }
+
 }

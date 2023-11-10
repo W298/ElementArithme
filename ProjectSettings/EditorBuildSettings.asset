@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EventScene.unity
     guid: 884d47415608fe84084556237bcae51b
+  - enabled: 1
+    path: Assets/Scenes/StoreScene.unity
+    guid: 5a70f041fab0a8c4696f5f77cea85d9c
   m_configObjects: {}

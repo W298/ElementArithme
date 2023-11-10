@@ -221,5 +221,6 @@ public class EventSceneManager : MonoBehaviour
     {
         SceneManager.LoadScene("StageSelect");
         StageController.Instance.eventCount = correctCount;
+        StageController.Instance.isClear = true;
     }
 }
