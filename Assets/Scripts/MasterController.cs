@@ -27,6 +27,13 @@ public class MasterController
 		new NumberCard { Number = 1 },
 		new NumberCard { Number = 2 },
 		new NumberCard { Number = 3 },
+		new DegreeCard { Type = DegreeType.PI2 },
+		new OperatorCard { Type = OperatorType.Sin },
+		new OperatorCard { Type = OperatorType.Divide },
+		new OperatorCard { Type = OperatorType.BracketL },
+		new OperatorCard { Type = OperatorType.BracketR },
+		new OperatorCard { Type = OperatorType.BracketL },
+		new OperatorCard { Type = OperatorType.BracketR }
 	});
 
 	public void AddCard(Card card)
