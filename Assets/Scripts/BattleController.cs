@@ -20,7 +20,17 @@ public class Card
 	
 }
 
-public class NumberCard : Card
+public class BaseCard : Card
+{
+
+}
+
+public class SpecialCard : Card
+{
+	
+}
+
+public class NumberCard : BaseCard
 {
 	public int Number;
 
@@ -35,7 +45,7 @@ public enum OperatorType
 	Add, Subtract, Multiply, Divide
 }
 
-public class OperatorCard : Card
+public class OperatorCard : BaseCard
 {
 	public OperatorType Type;
 
@@ -72,6 +82,11 @@ public class BattleController : MonoBehaviour
 
 	[SerializeField] private Text m_targetNumberText;
 	[SerializeField] private Text m_currentNumberText;
+
+	[SerializeField] private GameObject m_baseCard;
+	[SerializeField] private GameObject m_specialCard;
+
+	[SerializeField] private GameObject m_sequenceContainer;
 
 	private int currentTurn = 1;
 	private int maxTurn = 4;
@@ -152,6 +167,22 @@ public class BattleController : MonoBehaviour
 		return true;
 	}
 
+	public void SpawnCard(Card card)
+	{
+		if (card is BaseCard)
+		{
+			var cardObj = Instantiate(m_baseCard, Vector3.zero, Quaternion.identity);
+			cardObj.transform.SetParent(m_sequenceContainer.transform);
+			cardObj.GetComponent<BaseCardObject>().Init(card as BaseCard);
+		}
+		else
+		{
+			var cardObj = Instantiate(m_specialCard, Vector3.zero, Quaternion.identity);
+			cardObj.transform.SetParent(m_sequenceContainer.transform);
+			cardObj.GetComponent<SpecialCardObject>().Init(card as SpecialCard);
+		}
+	}
+
 	private void Start()
     {
 		m_stageText.text = "Stage " + MasterController.Instance.currentStageIndex;
@@ -160,6 +191,9 @@ public class BattleController : MonoBehaviour
 
 		m_targetNumberText.text = m_targetNumber.ToString();
 		m_currentNumberText.text = m_currentNumber.ToString();
+
+		SpawnCard(new NumberCard { Number = 1 });
+		SpawnCard(new SpecialCard {});
 
 	    PlaceCard(true, new NumberCard { Number = 1 });
 		SwitchTurn();
