@@ -14,6 +14,7 @@ public class CardObject : MonoBehaviour
         if (isEnemy)
         {
             GetComponent<Image>().sprite = m_enemySprite;
+            GetComponentInChildren<Text>().color = Color.white;
         }
     }
 
