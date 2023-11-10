@@ -84,15 +84,15 @@ public class DegreeCard : BaseCard
 		switch (Type)
 		{
 			case DegreeType.PI6:
-				return "π/6";
+				return "pi/6";
 			case DegreeType.PI3:
-				return "π/3";
+				return "pi/3";
 			case DegreeType.PI2:
-				return "π/3";
+				return "pi/3";
 			case DegreeType.PI:
-				return "π";
+				return "pi";
 			case DegreeType.X2PI:
-				return "2π";
+				return "2*pi";
 		}
 
 		return "";

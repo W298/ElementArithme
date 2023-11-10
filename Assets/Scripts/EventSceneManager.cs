@@ -212,7 +212,7 @@ public class EventSceneManager : MonoBehaviour
                 problemPanel.SetActive(false);
                 background.gameObject.SetActive(false);
                 popUP.SetActive(true);
-                popUPText.text = "���� ���� : " + correctCount.ToString();
+                popUPText.text = "정답 개수 : " + correctCount.ToString();
                 break;
         }
     }
