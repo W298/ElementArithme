@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 enum StageType { NormalBattle, DangerBattle, Store, BossBattle, Bonus, Mission }; 
 
@@ -30,23 +31,24 @@ public class StageButton : MonoBehaviour
         switch (stageType)
         {
             case StageType.NormalBattle:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 //MasterController.Instance.currentStageIndex = stageIndex;
+                StageController.Instance.stageClear(stageIndex);
                 break;
              case StageType.DangerBattle:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 break;
             case StageType.Store:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 break;
             case StageType.BossBattle:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 break;
             case StageType.Bonus:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 break;
              case StageType.Mission:
-                SceneManager.LoadScene("");
+                //SceneManager.LoadScene("");
                 break;
             default:
                 break;
@@ -56,5 +58,10 @@ public class StageButton : MonoBehaviour
     public void changeEnableFalse()
     {
         isEnable= false;
+    }
+
+    public void changeSprite(Sprite sprite)
+    {
+        this.GetComponent<Image>().sprite = sprite;
     }
 }
