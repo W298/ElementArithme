@@ -8,11 +8,13 @@ public struct EnemyInfo
 {
 	public string Name;
 	public int HP;
+	public List<Card> CardDeck;
 
-	public EnemyInfo(string name, int hp)
+	public EnemyInfo(string name, int hp, List<Card> initCardDeck = null)
 	{
 		Name = name;
 		HP = hp;
+		CardDeck = initCardDeck ?? new List<Card>();
 	}
 }
 
@@ -72,7 +74,7 @@ public class DegreeCard : BaseCard
 
 public enum OperatorType
 {
-	Multiply, Divide, Add, Subtract, BracketL, BracketR, Sin
+	Multiply, Divide, Add, Subtract, BracketL, BracketR, Sqrt, Floor, Ceil, Round, Sin, Cos, Tan, 
 }
 
 public class OperatorCard : BaseCard
@@ -95,8 +97,20 @@ public class OperatorCard : BaseCard
 				return "(";
 			case OperatorType.BracketR:
 				return ")";
+			case OperatorType.Sqrt:
+				return "sqrt";
+			case OperatorType.Floor:
+				return "floor";
+			case OperatorType.Ceil:
+				return "ceil";
+			case OperatorType.Round:
+				return "round";
 			case OperatorType.Sin:
 				return "sin";
+			case OperatorType.Cos:
+				return "cos";
+			case OperatorType.Tan:
+				return "tan";
 		}
 
 		return "";
@@ -124,6 +138,7 @@ public class BattleController : MonoBehaviour
 
 	[SerializeField] private GameObject m_sequenceContainer;
 	[SerializeField] private GameObject m_deckContainer;
+	[SerializeField] private GameObject m_enemyDeckContainer;
 
 	private int currentTurn = 1;
 	private int maxTurn = 10;
@@ -131,10 +146,16 @@ public class BattleController : MonoBehaviour
 	private List<Card> m_cardSequence = new();
 	private float m_targetNumber = 0;
 	private float m_currentNumber = 0;
-	private EnemyInfo m_enemyInfo = new("Frostbite", 100);
+	private EnemyInfo m_enemyInfo = new("Frostbite", 100, new List<Card>()
+	{
+		new NumberCard { Number = 1 },
+		new NumberCard { Number = 2 },
+		new NumberCard { Number = 3 },
+	});
 
 	private List<CardObject> m_cardListInDeck = new();
 	private List<CardObject> m_cardListInSequence = new();
+	private List<CardObject> m_cardListInEnemyDeck = new();
 
 	public int GetPlayerHP() { return MasterController.Instance.PlayerInfo.HP; }
 	public int GetEnemyHP() { return m_enemyInfo.HP; }
@@ -155,22 +176,29 @@ public class BattleController : MonoBehaviour
 
 	public float EvalSequence()
 	{
-		string expression = m_cardSequence.Aggregate("", (current, card) =>
+		string expression = "";
+		for (var i = 0; i < m_cardSequence.Count; i++)
 		{
-			if (card is DegreeCard)
+			var card = m_cardSequence[i];
+			if (card is OperatorCard && (int)(card as OperatorCard).Type >= 6)
 			{
-				var str = card.ToString();
-				str.Replace("π", "pi");
-				return current + str;
+				if (++i >= m_cardSequence.Count)
+					continue;
+				expression += card + "(" + m_cardSequence[i] + ")";
 			}
+			else
+			{
+				expression += card;
+			}
+		}
 
-			return current + card;
-		});
+		expression = expression.Replace("π", "pi");
 		ExpressionEvaluator.Evaluate(expression, out float result);
+		Debug.Log(expression);
 		return result;
 	}
 
-	public bool PlaceCard(bool isPlayer, Card card)
+	public bool PlaceCard(Card card)
 	{
 		if (!IsValid(card))
 		{
@@ -187,6 +215,31 @@ public class BattleController : MonoBehaviour
 		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
 		m_cardListInDeck.Remove(cardInDeck);
 		m_cardListInSequence.Add(cardInDeck);
+		
+		MasterController.Instance.UseCard(card);
+		
+		return true;
+	}
+
+	public bool EnemyPlaceCard(Card card)
+	{
+		if (!IsValid(card))
+		{
+			Debug.LogError("Invalid Sequence");
+			return false;
+		}
+
+		m_cardSequence.Add(card);
+		
+		m_currentNumber = EvalSequence();
+		m_currentNumberText.text = m_currentNumber.ToString();
+
+		var cardInDeck = m_cardListInEnemyDeck.First(obj => obj.card == card);
+		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
+		m_cardListInEnemyDeck.Remove(cardInDeck);
+		m_cardListInSequence.Add(cardInDeck);
+
+		m_enemyInfo.CardDeck.Remove(card);
 		
 		return true;
 	}
@@ -220,16 +273,20 @@ public class BattleController : MonoBehaviour
 		if (prevCard is OperatorCard)
 		{
 			var p = (int)(prevCard as OperatorCard).Type;
-			if (6 <= p && p <= 8 && newCard is not DegreeCard) return false;
+			if (10 <= p && p <= 12 && newCard is not DegreeCard) return false;
 		}
-		
+
+		if (prevCard is NumberCard && newCard is OperatorCard && (int)(newCard as OperatorCard).Type >= 4) return false;
+		if (prevCard is DegreeCard && newCard is DegreeCard) return false;
+		if (prevCard is DegreeCard && newCard is NumberCard) return false;
+		if (prevCard is NumberCard && newCard is DegreeCard) return false;
 		if (prevCard is NumberCard && newCard is NumberCard) return false;
 		if (prevCard is OperatorCard && newCard is OperatorCard)
 		{
 			var p = (int)(prevCard as OperatorCard).Type;
 			var n = (int)(newCard as OperatorCard).Type;
 
-			return (2 <= p && p <= 5) && (2 <= n && n <= 5);
+			return (2 <= p) && (2 <= n);
 		}
 
 		return true;
@@ -259,6 +316,32 @@ public class BattleController : MonoBehaviour
 		}
 	}
 
+	public CardObject SpawnEnemyCardToEnemyDeck(Card card)
+	{
+		if (card is BaseCard)
+		{
+			var cardGameObj = Instantiate(m_baseCard, Vector3.zero, Quaternion.identity);
+			cardGameObj.transform.SetParent(m_enemyDeckContainer.transform);
+			cardGameObj.transform.localScale = Vector3.one;
+			
+			var cardObj = cardGameObj.GetComponent<BaseCardObject>();
+			cardObj.Init(card, true);
+			
+			return cardObj;
+		}
+		else
+		{
+			var cardGameObj = Instantiate(m_specialCard, Vector3.zero, Quaternion.identity);
+			cardGameObj.transform.SetParent(m_enemyDeckContainer.transform);
+			cardGameObj.transform.localScale = Vector3.one;
+
+			var cardObj = cardGameObj.GetComponent<SpecialCardObject>();
+			cardObj.Init(card, true);
+			
+			return cardObj;
+		}
+	}
+
 	private void Start()
     {
 		m_stageText.text = "Stage " + MasterController.Instance.currentStageIndex;
@@ -274,13 +357,28 @@ public class BattleController : MonoBehaviour
 			spawnCardObject.CardClickEvent.AddListener(OnPlayerCardSelect);
 			m_cardListInDeck.Add(spawnCardObject);
 		}
+		
+		foreach (var enemyCard in m_enemyInfo.CardDeck)
+		{
+			var spawnCardObject = SpawnEnemyCardToEnemyDeck(enemyCard);
+			spawnCardObject.CardClickEvent.AddListener(OnEnemyCardSelect);
+			m_cardListInEnemyDeck.Add(spawnCardObject);
+		}
 	}
 
 	private void OnPlayerCardSelect(Card card)
 	{
-		// if (!isPlayerTurn) return;
+		if (!isPlayerTurn) return;
 		
-		var success = PlaceCard(true, card);
+		var success = PlaceCard(card);
+		if (success) SwitchTurn();
+	}
+	
+	private void OnEnemyCardSelect(Card card)
+	{
+		if (isPlayerTurn) return;
+		
+		var success = EnemyPlaceCard(card);
 		if (success) SwitchTurn();
 	}
 }

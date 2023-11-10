@@ -30,6 +30,8 @@ public class MasterController
 		new DegreeCard { Type = DegreeType.PI2 },
 		new OperatorCard { Type = OperatorType.Sin },
 		new OperatorCard { Type = OperatorType.Divide },
+		new OperatorCard { Type = OperatorType.Sqrt },
+		new OperatorCard { Type = OperatorType.Floor },
 		new OperatorCard { Type = OperatorType.BracketL },
 		new OperatorCard { Type = OperatorType.BracketR },
 		new OperatorCard { Type = OperatorType.BracketL },
