@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public struct EnemyInfo
@@ -40,9 +41,38 @@ public class NumberCard : BaseCard
 	}
 }
 
+public enum DegreeType
+{
+	PI6, PI3, PI2, PI, X2PI
+}
+
+public class DegreeCard : BaseCard
+{
+	public DegreeType Type;
+	
+	public override string ToString()
+	{
+		switch (Type)
+		{
+			case DegreeType.PI6:
+				return "π/6";
+			case DegreeType.PI3:
+				return "π/3";
+			case DegreeType.PI2:
+				return "π/3";
+			case DegreeType.PI:
+				return "π";
+			case DegreeType.X2PI:
+				return "2π";
+		}
+
+		return "";
+	}
+}
+
 public enum OperatorType
 {
-	Add, Subtract, Multiply, Divide
+	Multiply, Divide, Add, Subtract, BracketL, BracketR, Sin
 }
 
 public class OperatorCard : BaseCard
@@ -53,14 +83,20 @@ public class OperatorCard : BaseCard
 	{
 		switch (Type)
 		{
-			case OperatorType.Add:
-				return "+";
-			case OperatorType.Subtract:
-				return "-";
 			case OperatorType.Multiply:
 				return "*";
 			case OperatorType.Divide:
 				return "/";
+			case OperatorType.Add:
+				return "+";
+			case OperatorType.Subtract:
+				return "-";
+			case OperatorType.BracketL:
+				return "(";
+			case OperatorType.BracketR:
+				return ")";
+			case OperatorType.Sin:
+				return "sin";
 		}
 
 		return "";
@@ -87,14 +123,18 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private GameObject m_specialCard;
 
 	[SerializeField] private GameObject m_sequenceContainer;
+	[SerializeField] private GameObject m_deckContainer;
 
 	private int currentTurn = 1;
-	private int maxTurn = 4;
+	private int maxTurn = 10;
 	private bool isPlayerTurn = true;
 	private List<Card> m_cardSequence = new();
 	private float m_targetNumber = 0;
 	private float m_currentNumber = 0;
 	private EnemyInfo m_enemyInfo = new("Frostbite", 100);
+
+	private List<CardObject> m_cardListInDeck = new();
+	private List<CardObject> m_cardListInSequence = new();
 
 	public int GetPlayerHP() { return MasterController.Instance.PlayerInfo.HP; }
 	public int GetEnemyHP() { return m_enemyInfo.HP; }
@@ -115,7 +155,17 @@ public class BattleController : MonoBehaviour
 
 	public float EvalSequence()
 	{
-		string expression = m_cardSequence.Aggregate("", (current, card) => current + card);
+		string expression = m_cardSequence.Aggregate("", (current, card) =>
+		{
+			if (card is DegreeCard)
+			{
+				var str = card.ToString();
+				str.Replace("π", "pi");
+				return current + str;
+			}
+
+			return current + card;
+		});
 		ExpressionEvaluator.Evaluate(expression, out float result);
 		return result;
 	}
@@ -132,6 +182,11 @@ public class BattleController : MonoBehaviour
 		
 		m_currentNumber = EvalSequence();
 		m_currentNumberText.text = m_currentNumber.ToString();
+
+		var cardInDeck = m_cardListInDeck.First(obj => obj.card == card);
+		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
+		m_cardListInDeck.Remove(cardInDeck);
+		m_cardListInSequence.Add(cardInDeck);
 		
 		return true;
 	}
@@ -154,6 +209,7 @@ public class BattleController : MonoBehaviour
 	public void EndGame()
 	{
 		Debug.Log(Mathf.Abs(m_targetNumber - m_currentNumber) <= 10 ? "Player Win!" : "Player Lose!");
+		SceneManager.LoadScene("Scenes/StageSelect");
 	}
 
 	public bool IsValid(Card newCard)
@@ -161,18 +217,30 @@ public class BattleController : MonoBehaviour
 		Card prevCard = m_cardSequence.Count > 0 ? m_cardSequence[^1] : null;
 		if (prevCard == null) return true;
 
+		if (prevCard is OperatorCard)
+		{
+			var p = (int)(prevCard as OperatorCard).Type;
+			if (6 <= p && p <= 8 && newCard is not DegreeCard) return false;
+		}
+		
 		if (prevCard is NumberCard && newCard is NumberCard) return false;
-		if (prevCard is OperatorCard && newCard is OperatorCard) return false;
+		if (prevCard is OperatorCard && newCard is OperatorCard)
+		{
+			var p = (int)(prevCard as OperatorCard).Type;
+			var n = (int)(newCard as OperatorCard).Type;
+
+			return (2 <= p && p <= 5) && (2 <= n && n <= 5);
+		}
 
 		return true;
 	}
 
-	public CardObject SpawnCard(Card card)
+	public CardObject SpawnCardToDeck(Card card)
 	{
 		if (card is BaseCard)
 		{
 			var cardGameObj = Instantiate(m_baseCard, Vector3.zero, Quaternion.identity);
-			cardGameObj.transform.SetParent(m_sequenceContainer.transform);
+			cardGameObj.transform.SetParent(m_deckContainer.transform);
 			
 			var cardObj = cardGameObj.GetComponent<BaseCardObject>();
 			cardObj.Init(card);
@@ -182,7 +250,7 @@ public class BattleController : MonoBehaviour
 		else
 		{
 			var cardGameObj = Instantiate(m_specialCard, Vector3.zero, Quaternion.identity);
-			cardGameObj.transform.SetParent(m_sequenceContainer.transform);
+			cardGameObj.transform.SetParent(m_deckContainer.transform);
 
 			var cardObj = cardGameObj.GetComponent<SpecialCardObject>();
 			cardObj.Init(card);
@@ -202,22 +270,17 @@ public class BattleController : MonoBehaviour
 		
 		foreach (var playerCard in MasterController.Instance.PlayerInfo.CardDeck)
 		{
-			var spawnCardObject = SpawnCard(playerCard);
+			var spawnCardObject = SpawnCardToDeck(playerCard);
 			spawnCardObject.CardClickEvent.AddListener(OnPlayerCardSelect);
+			m_cardListInDeck.Add(spawnCardObject);
 		}
-
-	 //    PlaceCard(true, new NumberCard { Number = 1 });
-		// SwitchTurn();
-	 //    PlaceCard(false, new OperatorCard() { Type = OperatorType.Divide });
-	 //    SwitchTurn();
-	 //    PlaceCard(true, new NumberCard { Number = 5 });
-	 //    SwitchTurn();
-	 //    PlaceCard(false, new NumberCard { Number = 2 });
-	 //    SwitchTurn();
 	}
 
 	private void OnPlayerCardSelect(Card card)
 	{
-		Debug.Log("Clicked!");
+		// if (!isPlayerTurn) return;
+		
+		var success = PlaceCard(true, card);
+		if (success) SwitchTurn();
 	}
 }
