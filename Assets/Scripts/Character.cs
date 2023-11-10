@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    private Animator anim;
+    private Animator anim => GetComponent<Animator>();
     private float timer;
+    
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
         timer = 0f;
     }
 
@@ -17,35 +17,37 @@ public class Character : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (anim.GetBool("isAttack") && timer > 0.5f)
+        if (anim.GetBool("IsAttack") && timer > 0.2f)
         {
-            anim.SetBool("isAttack", false);
+            anim.SetBool("IsAttack", false);
         }
-        if (anim.GetBool("isHit") && timer > 0.5f)
+        if (anim.GetBool("IsHit") && timer > 0.2f)
         {
-            anim.SetBool("isHit", false);
+            anim.SetBool("IsHit", false);
         }
     }
 
     public void Attack()
     {
-        anim.SetBool("isAttack", true);
+        anim.SetBool("IsAttack", true);
+        timer = 0;
     }
 
     public void Hit()
     {
-        anim.SetBool("isHit", true);
+        anim.SetBool("IsHit", true);
+        timer = 0;
     }
 
     public void Die()
     {
-        anim.SetBool("isEnd", true);
-        anim.SetBool("isWin", false);
+        anim.SetBool("IsEnd", true);
+        anim.SetBool("IsWin", false);
     }
 
     public void Win()
     {
-        anim.SetBool("isEnd", true);
-        anim.SetBool("isWin", true);
+        anim.SetBool("IsEnd", true);
+        anim.SetBool("IsWin", true);
     }
 }
