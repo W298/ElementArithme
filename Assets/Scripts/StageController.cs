@@ -35,7 +35,13 @@ public class StageController : MonoBehaviour
     private GameObject stageButton;
     public GameObject[] buttons;
     public bool[] isClear;
+    public bool[] isEnable;
     public int stageIndex;
+
+    [SerializeField]
+    private Sprite disableStageSprite;
+    [SerializeField]
+    private Sprite clearStageSprite;
 
     // Start is called before the first frame update
     void Start()
@@ -44,11 +50,13 @@ public class StageController : MonoBehaviour
         {
             buttons = new GameObject[stageButton.transform.childCount];
             isClear = new bool[buttons.Length];
+            isEnable= new bool[buttons.Length]; 
 
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i] = stageButton.transform.GetChild(i).gameObject;
                 isClear[i] = false;
+                isEnable[i] = true;
             }
 
         }
@@ -57,84 +65,85 @@ public class StageController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void stageClear(int i)
     {
-        isClear[i] = true;
-        
+        isClear[i-1] = true;
+        checkStageEnable(i-1);
+        Debug.Log("stage clear" + i);
+        buttons[i - 1].GetComponent<StageButton>().changeSprite(clearStageSprite);
     }
 
-    void checkStageEnable()
+    void checkStageEnable(int i)
     {
-        if (isClear[1])
+        if(i == 1)
         {
-            buttons[2].GetComponent<StageButton>().changeEnableFalse();
-
-            if (isClear[3] || isClear[4])
-            {
-                buttons[5].GetComponent<StageButton>().changeEnableFalse();
-                buttons[7].GetComponent<StageButton>().changeEnableFalse();
-                buttons[8].GetComponent<StageButton>().changeEnableFalse();
-                buttons[11].GetComponent<StageButton>().changeEnableFalse();
-                buttons[14].GetComponent<StageButton>().changeEnableFalse();
+            SetDisable(2);
+            SetDisable(5);
+            SetDisable(9);
+            SetDisable(8);
+            SetDisable(11);
+            SetDisable(14);
 
 
-                if (isClear[3])
-                {
-                    buttons[4].GetComponent<StageButton>().changeEnableFalse();
-                    buttons[7].GetComponent<StageButton>().changeEnableFalse();
-                }
-                else if (isClear[4])
-                {
-                    buttons[3].GetComponent<StageButton>().changeEnableFalse();
-                    buttons[6].GetComponent<StageButton>().changeEnableFalse();
-                }
-
-                if (isClear[12])
-                {
-                    buttons[13].GetComponent<StageButton>().changeEnableFalse();
-                }
-                else if (isClear[13])
-                {
-                    buttons[12].GetComponent<StageButton>().changeEnableFalse();
-                }
-
-            }
         }
-        else if (isClear[2])
+        else if(i == 2) 
         {
-            buttons[1].GetComponent<StageButton>().changeEnableFalse();
-
-            if (isClear[5])
-            {
-                buttons[3].GetComponent<StageButton>().changeEnableFalse();
-                buttons[4].GetComponent<StageButton>().changeEnableFalse();
-                buttons[6].GetComponent<StageButton>().changeEnableFalse();
-                buttons[7].GetComponent<StageButton>().changeEnableFalse();
-                buttons[10].GetComponent<StageButton>().changeEnableFalse();
-                buttons[12].GetComponent<StageButton>().changeEnableFalse();
-                buttons[13].GetComponent<StageButton>().changeEnableFalse();
-                buttons[15].GetComponent<StageButton>().changeEnableFalse();
-
-                if (isClear[7])
-                {
-                    buttons[8].GetComponent<StageButton>().changeEnableFalse();
-                }
-                else if (isClear[8])
-                {
-                    buttons[7].GetComponent<StageButton>().changeEnableFalse();
-                }
-
-            }
+            SetDisable(1);
+            SetDisable(3);
+            SetDisable(6);
+        }
+        if(i == 3)
+        {
+            SetDisable(4);
+            SetDisable(7);
+        }
+        else if(i== 4)
+        {
+            SetDisable(3);
+            SetDisable(6);
+            SetDisable(5);
+            SetDisable(8);
+            SetDisable(9);
+            SetDisable(11);
+            SetDisable(14);
         }
 
-        
-        
+        if(i == 5)
+        {
+            SetDisable(4);
+            SetDisable(7);
+            SetDisable(10);
+            SetDisable(12);
+            SetDisable(13);
+            SetDisable(15);
+        }
+        if(i == 7)
+        {
+            SetDisable(8);
+        }
+        else if(i == 8)
+        {
+            SetDisable(7);
+        }
 
+        if (i == 12)
+        {
+            SetDisable(13);
+        }
+        else if (i == 13)
+        {
+            SetDisable(12);
+        }
 
-       
+    }
 
+    void SetDisable(int i)
+    {
+        buttons[i].GetComponent<StageButton>().changeEnableFalse();
+        isEnable[i] = false;
+        buttons[i].GetComponent<StageButton>().changeSprite(disableStageSprite);
     }
 }
