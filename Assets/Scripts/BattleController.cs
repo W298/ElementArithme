@@ -142,6 +142,8 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private GameObject m_enemyDeckContainer;
 	
 	[SerializeField] private GameObject m_turnIndicator;
+	
+	[SerializeField] private CharacterGenerator m_cg;
 
 	private int currentTurn = 1;
 	private int maxTurn = 5;
@@ -318,10 +320,15 @@ public class BattleController : MonoBehaviour
 			// Player win.
 			var v = Mathf.Lerp(20, 5, Mathf.Abs(m_targetNumber - m_currentNumber) / m_biasNumber);
 			SetEnemyHP(GetEnemyHP() - Mathf.FloorToInt(v));
+			
+			m_cg.player.Attack();
+			m_cg.enemyGameObj.GetComponent<Character>().Hit();
 		}
 		else
 		{
 			SetPlayerHP(GetPlayerHP() - 10);
+			m_cg.player.Hit();
+			m_cg.enemyGameObj.GetComponent<Character>().Attack();
 		}
 	}
 
