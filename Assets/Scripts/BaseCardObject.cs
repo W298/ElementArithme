@@ -1,13 +1,10 @@
-using UnityEngine;
 using UnityEngine.UI;
 
-public class BaseCardObject : MonoBehaviour
+public class BaseCardObject : CardObject
 {
-	private BaseCard baseCard;
-
-	public void Init(BaseCard baseCard)
+	public override void Init(Card baseCard)
 	{
-		this.baseCard = baseCard;
-		GetComponentInChildren<Text>().text = baseCard.ToString();
+		this.card = baseCard;
+		GetComponentInChildren<Text>().text = ((BaseCard)baseCard).ToString();
 	}
 }

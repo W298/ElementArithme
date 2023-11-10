@@ -1,12 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
-
-public class SpecialCardObject : MonoBehaviour
+public class SpecialCardObject : CardObject
 {
-	private Card specialCard;
-
-	public void Init(SpecialCard specialCard)
+	public override void Init(Card specialCard)
 	{
-		this.specialCard = specialCard;
+		this.card = specialCard;
 	}
 }
