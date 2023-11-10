@@ -129,7 +129,8 @@ public class BattleController : MonoBehaviour
 
 	[SerializeField] private Text m_stageText;
 	[SerializeField] private Text m_turnText;
-
+	[SerializeField] private Text m_cycleText;
+	
 	[SerializeField] private Text m_targetNumberText;
 	[SerializeField] private Text m_currentNumberText;
 
@@ -141,6 +142,8 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private GameObject m_enemyDeckContainer;
 	
 	[SerializeField] private GameObject m_turnIndicator;
+	
+	[SerializeField] private CharacterGenerator m_cg;
 
 	private int currentTurn = 1;
 	private int maxTurn = 5;
@@ -263,6 +266,7 @@ public class BattleController : MonoBehaviour
 	{
 		currentTurn = 1;
 		isPlayerTurn = currentCycle % 2 != 1;
+		m_cardSequence.Clear();
 		
 		foreach (var cardObject in m_cardListInSequence)
 		{
@@ -302,10 +306,8 @@ public class BattleController : MonoBehaviour
 
 	public void UpdateTurnRelatedInfo()
 	{
-		m_turnText.text = 
-			"Cycle " + currentCycle + " - " + 
-			(isPlayerTurn ? "Player Turn" : "Enemy Turn  ")
-			+ currentTurn + " / " + maxTurn;
+		m_turnText.text = currentTurn + " / " + maxTurn;
+		m_cycleText.text = currentCycle + " / " + maxCycle;
 		
 		m_turnIndicator.transform.GetChild(0).transform.gameObject.SetActive(isPlayerTurn);
 		m_turnIndicator.transform.GetChild(1).transform.gameObject.SetActive(!isPlayerTurn);
@@ -318,10 +320,15 @@ public class BattleController : MonoBehaviour
 			// Player win.
 			var v = Mathf.Lerp(20, 5, Mathf.Abs(m_targetNumber - m_currentNumber) / m_biasNumber);
 			SetEnemyHP(GetEnemyHP() - Mathf.FloorToInt(v));
+			
+			m_cg.player.Attack();
+			m_cg.enemyGameObj.GetComponent<Character>().Hit();
 		}
 		else
 		{
 			SetPlayerHP(GetPlayerHP() - 10);
+			m_cg.player.Hit();
+			m_cg.enemyGameObj.GetComponent<Character>().Attack();
 		}
 	}
 
@@ -422,6 +429,8 @@ public class BattleController : MonoBehaviour
 		
 		SetPlayerHP(GetPlayerHP());
 		SetEnemyHP(GetEnemyHP());
+
+		UpdateTurnRelatedInfo();
 		
 		foreach (var playerCard in MasterController.Instance.PlayerInfo.CardDeck)
 		{
