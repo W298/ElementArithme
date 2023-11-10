@@ -549,7 +549,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stageButton: {fileID: 0}
-  stageRewardCanvas: {fileID: 6772735116233860010, guid: 581c872338f794a4eaf5df30c3d3894b,
+  stageRewardCanvasPrefab: {fileID: 6772735116233860010, guid: 581c872338f794a4eaf5df30c3d3894b,
+    type: 3}
+  eventRewardCanvasPrefab: {fileID: 5348359265110388707, guid: 560b64d98b05bb24c8d63c7615253af3,
     type: 3}
   BaseCard: {fileID: 1924627305472041158, guid: fbb1db7cac6b34445ab5f1ad48ba7f2e,
     type: 3}
@@ -563,6 +565,11 @@ MonoBehaviour:
   isEnable: 
   stageIndex: 0
   isLoad: 0
+  stageRewardCanvas: {fileID: 6772735116233860010, guid: 581c872338f794a4eaf5df30c3d3894b,
+    type: 3}
+  eventRewardCanvas: {fileID: 5348359265110388707, guid: 560b64d98b05bb24c8d63c7615253af3,
+    type: 3}
+  rewardCards: []
   disableStageSprite: {fileID: -363352687, guid: e0f060b44f31608408232432fa3f16a3,
     type: 3}
   clearStageSprite: {fileID: -1711328306, guid: e0f060b44f31608408232432fa3f16a3,

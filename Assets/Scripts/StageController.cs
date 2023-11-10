@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class StageData
 {
@@ -42,7 +43,9 @@ public class StageController : MonoBehaviour
     [SerializeField]
     private GameObject stageButton;
     [SerializeField]
-    private GameObject stageRewardCanvas;
+    private GameObject stageRewardCanvasPrefab;
+    [SerializeField]
+    private GameObject eventRewardCanvasPrefab;
     [SerializeField]
     private GameObject BaseCard;
     [SerializeField]
@@ -56,7 +59,11 @@ public class StageController : MonoBehaviour
     public bool[] isClear;
     public bool[] isEnable;
     public int stageIndex;
+    public int eventCount;
     public bool isLoad = false;
+    public GameObject stageRewardCanvas;
+    public GameObject eventRewardCanvas;
+    public GameObject[] rewardCards;
 
     [SerializeField]
     private Sprite disableStageSprite;
@@ -86,6 +93,7 @@ public class StageController : MonoBehaviour
             {
                 buttons[i] = stageButton.transform.GetChild(i).gameObject;
             }
+            rewardCards = new GameObject[3];
             UpdateStageSprite();
 
             if (!isLoad)
@@ -105,10 +113,13 @@ public class StageController : MonoBehaviour
                 }
 
                 stageIndex = 0;
-                SetStageReward();
+                SetReward();
                 isLoad = true;
             }
-
+        }
+        if(stageIndex != 0)
+        {
+            stageClear(stageIndex);
         }
 
     }
@@ -137,6 +148,11 @@ public class StageController : MonoBehaviour
         UpdateStageSprite();
         ShowRewardCanvas(i);
         MoveCharacterPos(i);
+        if(eventCount != 0)
+        {
+            GetCorrentCount(eventCount);
+            eventCount = 0;
+        }
     }
 
     void checkStageEnable(int i)
@@ -204,84 +220,77 @@ public class StageController : MonoBehaviour
     }
 
 
-    public void SetStageReward()
+    public void SetReward()
     {
         stageData = new Dictionary<int, StageData>();
 
-        StageData tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 10});
-        tempData.rewardCards.Add(new NumberCard { Number = 13 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 10;
+        for(int k = 0; k < buttons.Length; k++)
+        {
+            SetStageReward(k, (int)Random.Range(5, k * 10));
+        }
 
-        stageData.Add(1, tempData);
 
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 20 });
-        tempData.rewardCards.Add(new NumberCard { Number = 23 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 20;
 
-        stageData.Add(2, tempData);
-
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 30 });
-        tempData.rewardCards.Add(new NumberCard { Number = 33 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 30;
-
-        stageData.Add(3, tempData);
-
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 40 });
-        tempData.rewardCards.Add(new NumberCard { Number = 43 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 40;
-
-        stageData.Add(4, tempData);
-
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 50 });
-        tempData.rewardCards.Add(new NumberCard { Number = 53 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 50;
-
-        stageData.Add(5, tempData);
-
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 60 });
-        tempData.rewardCards.Add(new NumberCard { Number = 63 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 60;
-
-        stageData.Add(6, tempData);
-
-        tempData = new StageData();
-        tempData.rewardCards = new List<Card>();
-        tempData.rewardCards.Add(new NumberCard { Number = 70 });
-        tempData.rewardCards.Add(new NumberCard { Number = 73 });
-        tempData.rewardCards.Add(new NumberCard { Number = 16 });
-        tempData.gold = 70;
-
-        stageData.Add(7, tempData);
-
-        for(int i = 1; i <= stageData.Count; i++)
+       /* for (int i = 1; i <= stageData.Count; i++)
         {
             Debug.Log(stageData[i].rewardCards[0]);
             Debug.Log(stageData[i].rewardCards[1]);
             Debug.Log(stageData[i].rewardCards[2]);
             Debug.Log(stageData[i].gold);
+        }*/
+    }
+
+    void SetStageReward(int stagenum, int gold)
+    {
+        StageData tempData = new StageData();
+        tempData.rewardCards = new List<Card>();
+        tempData.rewardCards.Add(new NumberCard { Number = (int)Random.Range(10, 100) });
+        tempData.rewardCards.Add(new NumberCard { Number = (int)Random.Range(10, 100) });
+
+        switch((int)Random.Range(0, 5))
+        {
+            case 0:
+                tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Multiply });
+                break;
+            case 1:
+                tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Add });
+                break;
+            case 2:
+                tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Subtract });
+                break;
+            case 3:
+                tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Divide });
+                break;
+            case 4:
+                tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Sin });
+                break;
+            /* case 5:
+                 tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Cos });
+                 break;
+             case 6:
+                 tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Tan });
+                 break;*/
+            default:
+                break;
         }
+        
+        tempData.gold = gold;
+
+        stageData.Add(stagenum, tempData);
     }
 
     void ShowRewardCanvas(int i)
     {
+        stageRewardCanvas = Instantiate(stageRewardCanvasPrefab, new Vector2(0, 0), Quaternion.identity);
+        for(int j = 0; j < 3; j++)
+        {
+            rewardCards[j] = Instantiate(BaseCard, new Vector2(100, 100), Quaternion.identity);
+            rewardCards[j].GetComponent<BaseCardObject>().Init(stageData[i].rewardCards[j]);
+            rewardCards[j].transform.parent = stageRewardCanvas.transform;
+            rewardCards[j].transform.localScale = new Vector3(4, 4);
+            rewardCards[j].transform.localPosition = new Vector3(-600 + 600 * j, 0);
+            rewardCards[j].GetComponent<CardObject>().CardClickEvent.AddListener(SelectRewardCard);
+        }
        /* stageRewardCanvas.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>().text = stageData[i].rewardCards[0].ToString();
         stageRewardCanvas.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>().text = stageData[i].rewardCards[1].ToString();
         stageRewardCanvas.transform.GetChild(3).transform.GetChild(0).GetComponent<Text>().text = stageData[i].rewardCards[2].ToString();*/
@@ -313,6 +322,77 @@ public class StageController : MonoBehaviour
                 whereAreCharacter.transform.position = buttons[1].transform.position;
                 break;
 
+        }
+    }
+
+    void SelectRewardCard(Card card)
+    {
+        MasterController.Instance.AddCard(card);
+        Destroy(stageRewardCanvas);
+    }
+
+    public void SetStageIndex(int i)
+    {
+        stageIndex = i;
+    }
+
+    public void GetCorrentCount(int i)
+    {
+        eventRewardCanvas = Instantiate(eventRewardCanvasPrefab, new Vector2(0, 0), Quaternion.identity);
+
+        for (int j = 0; j < Mathf.Min(i, 2); j++)
+        {
+            NumberCard tempNumCard = new NumberCard { Number = (int)Random.Range(1, 45) };
+            rewardCards[j] = Instantiate(BaseCard, new Vector2(100, 100), Quaternion.identity);
+            rewardCards[j].GetComponent<BaseCardObject>().Init(tempNumCard);
+            rewardCards[j].transform.parent = eventRewardCanvas.transform;
+            rewardCards[j].transform.localScale = new Vector3(4, 4);
+            rewardCards[j].transform.localPosition = new Vector3(-600 + 600 * j, 0);
+        }
+
+        if (i == 3)
+        {
+            OperatorCard tempOpCard = new OperatorCard();
+
+            switch ((int)Random.Range(0, 5))
+            {
+                case 0:
+                    tempOpCard.Type = OperatorType.Multiply;
+                    break;
+                case 1:
+                    tempOpCard.Type = OperatorType.Add;
+                    break;
+                case 2:
+                    tempOpCard.Type = OperatorType.Subtract;
+                    break;
+                case 3:
+                    tempOpCard.Type = OperatorType.Divide;
+                    break;
+                case 4:
+                    tempOpCard.Type = OperatorType.Sin;
+                    break;
+                /* case 5:
+                     tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Cos });
+                     break;
+                 case 6:
+                     tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Tan });
+                     break;*/
+                default:
+                    break;
+            }
+
+            rewardCards[2] = Instantiate(BaseCard, new Vector2(100, 100), Quaternion.identity);
+            rewardCards[2].GetComponent<BaseCardObject>().Init(tempOpCard);
+            rewardCards[2].transform.parent = eventRewardCanvas.transform;
+            rewardCards[2].transform.localScale = new Vector3(4, 4);
+            rewardCards[2].transform.localPosition = new Vector3(600, 0);
+
+        }
+
+
+        for (int j = 0; j < i; j++)
+        {
+            MasterController.Instance.AddCard(rewardCards[j].GetComponent<CardObject>().card);
         }
     }
 }
