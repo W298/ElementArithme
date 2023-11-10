@@ -68,35 +68,64 @@ public class StageController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!isLoad && SceneManager.GetActiveScene().name == "StageSelect")
+       
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (SceneManager.GetActiveScene().name == "StageSelect")
         {
             stageButton = GameObject.FindWithTag("StageButtons").gameObject;
             currentGold = GameObject.FindWithTag("GoldUI").gameObject;
-        }
-
-        if(stageButton != null)
-        {
-            buttons = new GameObject[stageButton.transform.childCount];
-            isClear = new bool[buttons.Length];
-            isEnable= new bool[buttons.Length]; 
-
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i] = stageButton.transform.GetChild(i).gameObject;
-                isClear[i] = false;
-                isEnable[i] = true;
+            }
+            UpdateStageSprite();
+
+            if (!isLoad)
+            {
+                buttons = new GameObject[stageButton.transform.childCount];
+                isClear = new bool[buttons.Length];
+                isEnable = new bool[buttons.Length];
+
+                if (stageButton != null)
+                {
+                    for (int i = 0; i < buttons.Length; i++)
+                    {
+                        buttons[i] = stageButton.transform.GetChild(i).gameObject;
+                        isClear[i] = false;
+                        isEnable[i] = true;
+                    }
+                }
+
+                stageIndex = 0;
+                SetStageReward();
+                isLoad = true;
             }
 
         }
-        stageIndex= 0;
-        stageRewardCanvas.SetActive(false);
-        SetStageReward();
+
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;  
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentGold.transform.GetChild(1).GetComponent<Text>().text = MasterController.Instance.PlayerInfo.Gold.ToString();
+        if(currentGold != null)
+        {
+            currentGold.transform.GetChild(1).GetComponent<Text>().text = MasterController.Instance.PlayerInfo.Gold.ToString();
+
+        }
     }
    
 
@@ -105,7 +134,7 @@ public class StageController : MonoBehaviour
         isClear[i-1] = true;
         checkStageEnable(i-1);
         Debug.Log("stage clear" + i);
-        buttons[i - 1].GetComponent<StageButton>().changeSprite(clearStageSprite);
+        UpdateStageSprite();
         ShowRewardCanvas(i);
         MoveCharacterPos(i);
     }
@@ -265,6 +294,14 @@ public class StageController : MonoBehaviour
         buttons[i].GetComponent<StageButton>().changeSprite(disableStageSprite);
     }
 
+    void UpdateStageSprite()
+    {
+        for (int j = 0; j < buttons.Length; j++)
+        {
+            if (isClear[j]) buttons[j].GetComponent<StageButton>().changeSprite(clearStageSprite);
+            if (!isEnable[j]) buttons[j].GetComponent<StageButton>().changeSprite(disableStageSprite);
+        }
+    }
     void MoveCharacterPos(int i)
     {
         switch (i)

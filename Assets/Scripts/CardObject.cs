@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 public class CardObject : MonoBehaviour
 {
-    protected Card card;
+    public Card card;
     public UnityEvent<Card> CardClickEvent;
 
     public virtual void Init(Card baseCard)
