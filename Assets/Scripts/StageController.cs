@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class StageData
 {
@@ -44,6 +45,8 @@ public class StageController : MonoBehaviour
     [SerializeField]
     private GameObject stageRewardCanvasPrefab;
     [SerializeField]
+    private GameObject eventRewardCanvasPrefab;
+    [SerializeField]
     private GameObject BaseCard;
     [SerializeField]
     private GameObject SpecialCard;
@@ -56,8 +59,10 @@ public class StageController : MonoBehaviour
     public bool[] isClear;
     public bool[] isEnable;
     public int stageIndex;
+    public int eventCount;
     public bool isLoad = false;
     public GameObject stageRewardCanvas;
+    public GameObject eventRewardCanvas;
     public GameObject[] rewardCards;
 
     [SerializeField]
@@ -114,7 +119,7 @@ public class StageController : MonoBehaviour
         }
         if(stageIndex != 0)
         {
-
+            stageClear(stageIndex);
         }
 
     }
@@ -143,6 +148,11 @@ public class StageController : MonoBehaviour
         UpdateStageSprite();
         ShowRewardCanvas(i);
         MoveCharacterPos(i);
+        if(eventCount != 0)
+        {
+            GetCorrentCount(eventCount);
+            eventCount = 0;
+        }
     }
 
     void checkStageEnable(int i)
@@ -221,13 +231,13 @@ public class StageController : MonoBehaviour
 
 
 
-        for (int i = 1; i <= stageData.Count; i++)
+       /* for (int i = 1; i <= stageData.Count; i++)
         {
             Debug.Log(stageData[i].rewardCards[0]);
             Debug.Log(stageData[i].rewardCards[1]);
             Debug.Log(stageData[i].rewardCards[2]);
             Debug.Log(stageData[i].gold);
-        }
+        }*/
     }
 
     void SetStageReward(int stagenum, int gold)
@@ -324,5 +334,65 @@ public class StageController : MonoBehaviour
     public void SetStageIndex(int i)
     {
         stageIndex = i;
+    }
+
+    public void GetCorrentCount(int i)
+    {
+        eventRewardCanvas = Instantiate(eventRewardCanvasPrefab, new Vector2(0, 0), Quaternion.identity);
+
+        for (int j = 0; j < Mathf.Min(i, 2); j++)
+        {
+            NumberCard tempNumCard = new NumberCard { Number = (int)Random.Range(1, 45) };
+            rewardCards[j] = Instantiate(BaseCard, new Vector2(100, 100), Quaternion.identity);
+            rewardCards[j].GetComponent<BaseCardObject>().Init(tempNumCard);
+            rewardCards[j].transform.parent = eventRewardCanvas.transform;
+            rewardCards[j].transform.localScale = new Vector3(4, 4);
+            rewardCards[j].transform.localPosition = new Vector3(-600 + 600 * j, 0);
+        }
+
+        if (i == 3)
+        {
+            OperatorCard tempOpCard = new OperatorCard();
+
+            switch ((int)Random.Range(0, 5))
+            {
+                case 0:
+                    tempOpCard.Type = OperatorType.Multiply;
+                    break;
+                case 1:
+                    tempOpCard.Type = OperatorType.Add;
+                    break;
+                case 2:
+                    tempOpCard.Type = OperatorType.Subtract;
+                    break;
+                case 3:
+                    tempOpCard.Type = OperatorType.Divide;
+                    break;
+                case 4:
+                    tempOpCard.Type = OperatorType.Sin;
+                    break;
+                /* case 5:
+                     tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Cos });
+                     break;
+                 case 6:
+                     tempData.rewardCards.Add(new OperatorCard { Type = OperatorType.Tan });
+                     break;*/
+                default:
+                    break;
+            }
+
+            rewardCards[2] = Instantiate(BaseCard, new Vector2(100, 100), Quaternion.identity);
+            rewardCards[2].GetComponent<BaseCardObject>().Init(tempOpCard);
+            rewardCards[2].transform.parent = eventRewardCanvas.transform;
+            rewardCards[2].transform.localScale = new Vector3(4, 4);
+            rewardCards[2].transform.localPosition = new Vector3(600, 0);
+
+        }
+
+
+        for (int j = 0; j < i; j++)
+        {
+            MasterController.Instance.AddCard(rewardCards[j].GetComponent<CardObject>().card);
+        }
     }
 }

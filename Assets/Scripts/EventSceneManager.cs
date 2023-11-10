@@ -212,7 +212,7 @@ public class EventSceneManager : MonoBehaviour
                 problemPanel.SetActive(false);
                 background.gameObject.SetActive(false);
                 popUP.SetActive(true);
-                popUPText.text = "¸ÂÀº °³¼ö : " + correctCount.ToString();
+                popUPText.text = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : " + correctCount.ToString();
                 break;
         }
     }
@@ -220,5 +220,6 @@ public class EventSceneManager : MonoBehaviour
     public void StageSelect()
     {
         SceneManager.LoadScene("StageSelect");
+        StageController.Instance.eventCount = correctCount;
     }
 }
