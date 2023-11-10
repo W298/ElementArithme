@@ -28,12 +28,12 @@ public class StageButton : MonoBehaviour
 
     public void GoToStage()
     {
+        StageController.Instance.SetStageIndex(stageIndex);
         switch (stageType)
         {
             case StageType.NormalBattle:
-                //SceneManager.LoadScene("");
-                //MasterController.Instance.currentStageIndex = stageIndex;
-                StageController.Instance.stageClear(stageIndex);
+                //SceneManager.LoadScene("GameScene");
+                StageController.Instance.stageClear(MasterController.Instance.currentStageIndex);
                 break;
              case StageType.DangerBattle:
                 //SceneManager.LoadScene("");
@@ -42,10 +42,11 @@ public class StageButton : MonoBehaviour
                 SceneManager.LoadScene("StoreScene");
                 break;
             case StageType.BossBattle:
-                //SceneManager.LoadScene("");
+                SceneManager.LoadScene("GameScene");
                 break;
             case StageType.Bonus:
                 //SceneManager.LoadScene("");
+                StageController.Instance.stageClear(MasterController.Instance.currentStageIndex);
                 break;
              case StageType.Mission:
                 SceneManager.LoadScene("EventScene");
@@ -53,7 +54,6 @@ public class StageButton : MonoBehaviour
             default:
                 break;
         }
-        StageController.Instance.SetStageIndex(stageIndex);
     }
 
     public void changeEnableFalse()

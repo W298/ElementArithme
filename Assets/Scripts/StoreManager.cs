@@ -92,5 +92,6 @@ public class StoreManager : MonoBehaviour
         MasterController.Instance.AddCard(card);
         MasterController.Instance.PlayerInfo.Gold -= costs[(int)Random.Range(0, 3)];
         SceneManager.LoadScene("StageSelect");
+        StageController.Instance.isClear= true;
     }
 }
