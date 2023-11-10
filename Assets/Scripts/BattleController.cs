@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -176,30 +177,33 @@ public class BattleController : MonoBehaviour
 	[SerializeField] private GameObject m_turnIndicator;
 	
 	[SerializeField] private CharacterGenerator m_cg;
+	
+	[SerializeField] private Text m_tooltip;
+
+	private bool isReverse = false;
 
 	private int currentTurn = 1;
-	private int maxTurn = 5;
+	private int maxTurn = 11;
 	private int currentCycle = 1;
-	private int maxCycle = 4;
+	private int maxCycle = 3;
 	private bool isPlayerTurn = true;
 	private List<Card> m_cardSequence = new();
 	private float m_targetNumber = 0;
 	private float m_currentNumber = 0;
-	private float m_biasNumber = 10;
+	private float m_biasNumber = 20;
 	private EnemyInfo m_enemyInfo = new("Frostbite", 100, new List<Card>()
 	{
-		new NumberCard { Number = 1 },
 		new NumberCard { Number = 2 },
-		new NumberCard { Number = 3 },
-		new DegreeCard { Type = DegreeType.PI2 },
-		new OperatorCard { Type = OperatorType.Sin },
-		new OperatorCard { Type = OperatorType.Divide },
-		new OperatorCard { Type = OperatorType.Sqrt },
-		new OperatorCard { Type = OperatorType.Floor },
-		new OperatorCard { Type = OperatorType.BracketL },
+		new NumberCard { Number = 4 },
+		new DegreeCard { Type = DegreeType.PI },
+		new OperatorCard { Type = OperatorType.Cos },
+		new OperatorCard { Type = OperatorType.Add },
+		new OperatorCard { Type = OperatorType.Multiply },
+		new OperatorCard { Type = OperatorType.Multiply },
 		new OperatorCard { Type = OperatorType.BracketR },
-		new OperatorCard { Type = OperatorType.BracketL },
-		new OperatorCard { Type = OperatorType.BracketR }
+		new OperatorCard { Type = OperatorType.Cos },
+		new OperatorCard { Type = OperatorType.Sqrt },
+		new OperatorCard { Type = OperatorType.Round },
 	});
 
 	private List<CardObject> m_cardListInDeck = new();
@@ -264,7 +268,7 @@ public class BattleController : MonoBehaviour
 		m_cardListInDeck.Remove(cardInDeck);
 		m_cardListInSequence.Add(cardInDeck);
 		
-		MasterController.Instance.UseCard(card);
+		// MasterController.Instance.UseCard(card);
 		
 		return true;
 	}
@@ -298,6 +302,12 @@ public class BattleController : MonoBehaviour
 		currentTurn = 1;
 		isPlayerTurn = currentCycle % 2 != 1;
 		m_cardSequence.Clear();
+		m_targetNumber = -30;
+		isReverse = true;
+		m_currentNumber = 0;
+		m_targetNumberText.text = m_targetNumber.ToString();
+		m_currentNumberText.text = m_currentNumber.ToString();
+		m_tooltip.text = "과의 차이 >= 30 이면 승리";
 		
 		foreach (var cardObject in m_cardListInSequence)
 		{
@@ -344,20 +354,52 @@ public class BattleController : MonoBehaviour
 		m_turnIndicator.transform.GetChild(1).transform.gameObject.SetActive(!isPlayerTurn);
 	}
 
+	private IEnumerator PlayerWinRoutine()
+	{
+		m_targetNumberText.text = "Player Win!";
+		m_targetNumberText.fontSize = 60;
+		yield return new WaitForSeconds(2.0f);;
+		EndGame();
+	}
+
+	private IEnumerator EnemyWinRoutine()
+	{
+		m_targetNumberText.text = "Enemy Win!";
+		m_targetNumberText.fontSize = 60;
+		yield return new WaitForSeconds(2.0f);;
+		EndGame();
+	}
+
 	public void ApplyDamage()
 	{
-		if (Mathf.Abs(m_targetNumber - m_currentNumber) <= m_biasNumber)
+		var cond = !isReverse ? Mathf.Abs(m_targetNumber - m_currentNumber) <= m_biasNumber : Mathf.Abs(m_targetNumber - m_currentNumber) > m_biasNumber;
+		if (cond)
 		{
 			// Player win.
 			var v = Mathf.Lerp(20, 5, Mathf.Abs(m_targetNumber - m_currentNumber) / m_biasNumber);
-			SetEnemyHP(GetEnemyHP() - Mathf.FloorToInt(v));
+			SetEnemyHP(GetEnemyHP() - 50);
+			
+			if (GetEnemyHP() <= 0)
+			{
+                m_cg.newPlayer.Win();
+				m_cg.enemyGameObj.GetComponent<Character>().Die();
+				StartCoroutine(PlayerWinRoutine());
+			}
 			
 			m_cg.newPlayer.Attack();
 			m_cg.enemyGameObj.GetComponent<Character>().Hit();
 		}
 		else
 		{
-			SetPlayerHP(GetPlayerHP() - 10);
+			SetPlayerHP(Mathf.Clamp(GetPlayerHP() - 50, 0, 100));
+			
+			if (GetPlayerHP() <= 0)
+			{
+				m_cg.newPlayer.Die();
+				m_cg.enemyGameObj.GetComponent<Character>().Win();
+				StartCoroutine(EnemyWinRoutine());
+			}
+			
 			m_cg.newPlayer.Hit();
 			m_cg.enemyGameObj.GetComponent<Character>().Attack();
 		}
@@ -452,8 +494,7 @@ public class BattleController : MonoBehaviour
 		m_playerNameText.text = MasterController.Instance.PlayerInfo.Name;
 	    m_enemyNameText.text = m_enemyInfo.Name;
 
-	    m_targetNumber = Random.Range(0, 101);
-	    m_biasNumber = m_targetNumber / 10.0f;
+	    m_targetNumber = 15;
         
 		m_targetNumberText.text = m_targetNumber.ToString();
 		m_currentNumberText.text = m_currentNumber.ToString("N");

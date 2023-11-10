@@ -24,18 +24,17 @@ public class MasterController
 	public int currentStageIndex = 0;
 	public PlayerInfo PlayerInfo = new("Hansu", 100, 0,
 	new List<Card>() {
-		new NumberCard { Number = 1 },
-		new NumberCard { Number = 2 },
-		new NumberCard { Number = 3 },
+		new NumberCard { Number = 15 },
+		new NumberCard { Number = 16 },
 		new DegreeCard { Type = DegreeType.PI2 },
-		new OperatorCard { Type = OperatorType.Sin },
-		new OperatorCard { Type = OperatorType.Divide },
+		new DegreeCard { Type = DegreeType.PI },
+		new DegreeCard { Type = DegreeType.PI },
+		new OperatorCard { Type = OperatorType.Add },
+		new OperatorCard { Type = OperatorType.Multiply },
+		new OperatorCard { Type = OperatorType.Multiply },
+		new OperatorCard { Type = OperatorType.BracketL },
+		new OperatorCard { Type = OperatorType.Ceil },
 		new OperatorCard { Type = OperatorType.Sqrt },
-		new OperatorCard { Type = OperatorType.Floor },
-		new OperatorCard { Type = OperatorType.BracketL },
-		new OperatorCard { Type = OperatorType.BracketR },
-		new OperatorCard { Type = OperatorType.BracketL },
-		new OperatorCard { Type = OperatorType.BracketR }
 	});
 
 	public void AddCard(Card card)
