@@ -25,7 +25,10 @@ public class Card
 
 public class BaseCard : Card
 {
-
+	public virtual string GetVisibleString()
+	{
+		return "";
+	}
 }
 
 public class SpecialCard : Card
@@ -36,6 +39,11 @@ public class SpecialCard : Card
 public class NumberCard : BaseCard
 {
 	public int Number;
+
+	public override string GetVisibleString()
+	{
+		return Number.ToString();
+	}
 
 	public override string ToString()
 	{
@@ -51,8 +59,27 @@ public enum DegreeType
 public class DegreeCard : BaseCard
 {
 	public DegreeType Type;
-	
+
 	public override string ToString()
+	{
+		switch (Type)
+		{
+			case DegreeType.PI6:
+				return "pi/6";
+			case DegreeType.PI3:
+				return "pi/3";
+			case DegreeType.PI2:
+				return "pi/3";
+			case DegreeType.PI:
+				return "pi";
+			case DegreeType.X2PI:
+				return "2*pi";
+		}
+
+		return "";
+	}
+	
+	public override string GetVisibleString()
 	{
 		switch (Type)
 		{
@@ -114,6 +141,11 @@ public class OperatorCard : BaseCard
 		}
 
 		return "";
+	}
+
+	public override string GetVisibleString()
+	{
+		return ToString();
 	}
 }
 
@@ -208,8 +240,7 @@ public class BattleController : MonoBehaviour
 				expression += card;
 			}
 		}
-
-		expression = expression.Replace("π", "pi");
+		
 		ExpressionEvaluator.Evaluate(expression, out float result);
 		Debug.Log(expression);
 		return result;
@@ -226,7 +257,7 @@ public class BattleController : MonoBehaviour
 		m_cardSequence.Add(card);
 		
 		m_currentNumber = EvalSequence();
-		m_currentNumberText.text = m_currentNumber.ToString();
+		m_currentNumberText.text = m_currentNumber.ToString("N");
 
 		var cardInDeck = m_cardListInDeck.First(obj => obj.card == card);
 		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
@@ -249,7 +280,7 @@ public class BattleController : MonoBehaviour
 		m_cardSequence.Add(card);
 		
 		m_currentNumber = EvalSequence();
-		m_currentNumberText.text = m_currentNumber.ToString();
+		m_currentNumberText.text = m_currentNumber.ToString("N");
 
 		var cardInDeck = m_cardListInEnemyDeck.First(obj => obj.card == card);
 		cardInDeck.transform.SetParent(m_sequenceContainer.transform);
@@ -425,7 +456,7 @@ public class BattleController : MonoBehaviour
 	    m_biasNumber = m_targetNumber / 10.0f;
         
 		m_targetNumberText.text = m_targetNumber.ToString();
-		m_currentNumberText.text = m_currentNumber.ToString();
+		m_currentNumberText.text = m_currentNumber.ToString("N");
 		
 		SetPlayerHP(GetPlayerHP());
 		SetEnemyHP(GetEnemyHP());
