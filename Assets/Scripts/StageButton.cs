@@ -32,8 +32,7 @@ public class StageButton : MonoBehaviour
         switch (stageType)
         {
             case StageType.NormalBattle:
-                //SceneManager.LoadScene("GameScene");
-                StageController.Instance.stageClear(MasterController.Instance.currentStageIndex);
+                SceneManager.LoadScene("GameScene");
                 break;
              case StageType.DangerBattle:
                 //SceneManager.LoadScene("");

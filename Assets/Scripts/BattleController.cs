@@ -408,6 +408,7 @@ public class BattleController : MonoBehaviour
 	public void EndGame()
 	{
 		SceneManager.LoadScene("Scenes/StageSelect");
+		StageController.Instance.isClear = true;
 	}
 
 	public bool IsValid(Card newCard)
