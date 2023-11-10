@@ -6,6 +6,6 @@ public class BaseCardObject : CardObject
 	{
 		base.Init(baseCard, isEnemy);
 		this.card = baseCard;
-		GetComponentInChildren<Text>().text = ((BaseCard)baseCard).ToString();
+		GetComponentInChildren<Text>().text = ((BaseCard)baseCard).GetVisibleString();
 	}
 }
