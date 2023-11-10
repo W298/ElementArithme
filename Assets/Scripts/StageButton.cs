@@ -48,11 +48,12 @@ public class StageButton : MonoBehaviour
                 //SceneManager.LoadScene("");
                 break;
              case StageType.Mission:
-                //SceneManager.LoadScene("");
+                SceneManager.LoadScene("EventScene");
                 break;
             default:
                 break;
         }
+        StageController.Instance.SetStageIndex(stageIndex);
     }
 
     public void changeEnableFalse()
@@ -64,4 +65,6 @@ public class StageButton : MonoBehaviour
     {
         this.GetComponent<Image>().sprite = sprite;
     }
+
+
 }
