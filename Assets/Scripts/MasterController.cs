@@ -27,8 +27,13 @@ public class MasterController
 		new NumberCard { Number = 3 },
 	});
 
-	public void GetCard(Card card)
+	public void AddCard(Card card)
 	{
 		PlayerInfo.CardDeck.Add(card);
+	}
+
+	public void UseCard(Card card)
+	{
+		PlayerInfo.CardDeck.Remove(card);
 	}
 }
