@@ -111,6 +111,9 @@ public class StageController : MonoBehaviour
                 SetReward();
                 isLoad = true;
             }
+        }
+        if(stageIndex != 0)
+        {
 
         }
 
@@ -316,5 +319,10 @@ public class StageController : MonoBehaviour
     {
         MasterController.Instance.AddCard(card);
         Destroy(stageRewardCanvas);
+    }
+
+    public void SetStageIndex(int i)
+    {
+        stageIndex = i;
     }
 }
