@@ -1,0 +1,1 @@
+https://cafedraw.itch.io/fantasy-card-assets
