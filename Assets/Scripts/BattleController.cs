@@ -129,7 +129,8 @@ public class BattleController : MonoBehaviour
 
 	[SerializeField] private Text m_stageText;
 	[SerializeField] private Text m_turnText;
-
+	[SerializeField] private Text m_cycleText;
+	
 	[SerializeField] private Text m_targetNumberText;
 	[SerializeField] private Text m_currentNumberText;
 
@@ -263,6 +264,7 @@ public class BattleController : MonoBehaviour
 	{
 		currentTurn = 1;
 		isPlayerTurn = currentCycle % 2 != 1;
+		m_cardSequence.Clear();
 		
 		foreach (var cardObject in m_cardListInSequence)
 		{
@@ -302,10 +304,8 @@ public class BattleController : MonoBehaviour
 
 	public void UpdateTurnRelatedInfo()
 	{
-		m_turnText.text = 
-			"Cycle " + currentCycle + " - " + 
-			(isPlayerTurn ? "Player Turn" : "Enemy Turn  ")
-			+ currentTurn + " / " + maxTurn;
+		m_turnText.text = currentTurn + " / " + maxTurn;
+		m_cycleText.text = currentCycle + " / " + maxCycle;
 		
 		m_turnIndicator.transform.GetChild(0).transform.gameObject.SetActive(isPlayerTurn);
 		m_turnIndicator.transform.GetChild(1).transform.gameObject.SetActive(!isPlayerTurn);
@@ -422,6 +422,8 @@ public class BattleController : MonoBehaviour
 		
 		SetPlayerHP(GetPlayerHP());
 		SetEnemyHP(GetEnemyHP());
+
+		UpdateTurnRelatedInfo();
 		
 		foreach (var playerCard in MasterController.Instance.PlayerInfo.CardDeck)
 		{
