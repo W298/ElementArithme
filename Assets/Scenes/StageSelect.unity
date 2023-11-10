@@ -1117,7 +1117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 2
+  stageType: 4
   stageIndex: 5
   isEnable: 0
 --- !u!114 &306161580
@@ -2965,7 +2965,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1668549230, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
+  m_Sprite: {fileID: -939501178, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3638,7 +3638,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1668549230, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5e3a659bbb0bf2e42aa4b124a4688bdb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3788,7 +3788,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -939501178, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
+  m_Sprite: {fileID: 1668549230, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3863,7 +3863,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5e3a659bbb0bf2e42aa4b124a4688bdb, type: 3}
+  m_Sprite: {fileID: -334975869, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4430,7 +4430,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5e3a659bbb0bf2e42aa4b124a4688bdb, type: 3}
+  m_Sprite: {fileID: -334975869, guid: e0f060b44f31608408232432fa3f16a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4725,7 +4725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 5
+  stageType: 0
   stageIndex: 3
   isEnable: 0
 --- !u!114 &1470111165
@@ -5732,7 +5732,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 4
+  stageType: 5
   stageIndex: 2
   isEnable: 0
 --- !u!1 &1948954866
@@ -5787,7 +5787,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 5
+  stageType: 0
   stageIndex: 4
   isEnable: 0
 --- !u!114 &1948954869
@@ -6236,7 +6236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 4
+  stageType: 2
   stageIndex: 8
   isEnable: 0
 --- !u!114 &2126230090

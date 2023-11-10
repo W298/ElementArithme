@@ -46,6 +46,7 @@ public class StageButton : MonoBehaviour
                 break;
             case StageType.Bonus:
                 //SceneManager.LoadScene("");
+                StageController.Instance.stageClear(MasterController.Instance.currentStageIndex);
                 break;
              case StageType.Mission:
                 SceneManager.LoadScene("EventScene");
