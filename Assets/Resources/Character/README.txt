@@ -1,2 +1,2 @@
 https://pixelfrog-assets.itch.io/pirate-bomb
-https://oisougabo.itch.io/gap-i
+https://free-game-assets.itch.io/free-fantasy-knight?download
