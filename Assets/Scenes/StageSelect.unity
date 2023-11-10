@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 0
+  stageType: 2
   stageIndex: 15
   isEnable: 0
 --- !u!114 &227747021
@@ -2478,7 +2478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dd3cf933e28ac4eb2d32a39ce4cd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageType: 0
+  stageType: 2
   stageIndex: 11
   isEnable: 0
 --- !u!114 &618083886

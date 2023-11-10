@@ -153,6 +153,7 @@ public class StageController : MonoBehaviour
             GetCorrentCount(eventCount);
             eventCount = 0;
         }
+        MasterController.Instance.PlayerInfo.Gold += stageData[i].gold;
     }
 
     void checkStageEnable(int i)
@@ -298,9 +299,12 @@ public class StageController : MonoBehaviour
 
     void SetDisable(int i)
     {
-        buttons[i].GetComponent<StageButton>().changeEnableFalse();
-        isEnable[i] = false;
-        buttons[i].GetComponent<StageButton>().changeSprite(disableStageSprite);
+        if(buttons != null)
+        {
+            buttons[i].GetComponent<StageButton>().changeEnableFalse();
+            isEnable[i] = false;
+            buttons[i].GetComponent<StageButton>().changeSprite(disableStageSprite);
+        }
     }
 
     void UpdateStageSprite()
