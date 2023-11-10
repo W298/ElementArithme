@@ -167,19 +167,27 @@ public class BattleController : MonoBehaviour
 		return true;
 	}
 
-	public void SpawnCard(Card card)
+	public CardObject SpawnCard(Card card)
 	{
 		if (card is BaseCard)
 		{
-			var cardObj = Instantiate(m_baseCard, Vector3.zero, Quaternion.identity);
-			cardObj.transform.SetParent(m_sequenceContainer.transform);
-			cardObj.GetComponent<BaseCardObject>().Init(card as BaseCard);
+			var cardGameObj = Instantiate(m_baseCard, Vector3.zero, Quaternion.identity);
+			cardGameObj.transform.SetParent(m_sequenceContainer.transform);
+			
+			var cardObj = cardGameObj.GetComponent<BaseCardObject>();
+			cardObj.Init(card);
+			
+			return cardObj;
 		}
 		else
 		{
-			var cardObj = Instantiate(m_specialCard, Vector3.zero, Quaternion.identity);
-			cardObj.transform.SetParent(m_sequenceContainer.transform);
-			cardObj.GetComponent<SpecialCardObject>().Init(card as SpecialCard);
+			var cardGameObj = Instantiate(m_specialCard, Vector3.zero, Quaternion.identity);
+			cardGameObj.transform.SetParent(m_sequenceContainer.transform);
+
+			var cardObj = cardGameObj.GetComponent<SpecialCardObject>();
+			cardObj.Init(card);
+			
+			return cardObj;
 		}
 	}
 
@@ -191,17 +199,25 @@ public class BattleController : MonoBehaviour
 
 		m_targetNumberText.text = m_targetNumber.ToString();
 		m_currentNumberText.text = m_currentNumber.ToString();
+		
+		foreach (var playerCard in MasterController.Instance.PlayerInfo.CardDeck)
+		{
+			var spawnCardObject = SpawnCard(playerCard);
+			spawnCardObject.CardClickEvent.AddListener(OnPlayerCardSelect);
+		}
 
-		SpawnCard(new NumberCard { Number = 1 });
-		SpawnCard(new SpecialCard {});
+	 //    PlaceCard(true, new NumberCard { Number = 1 });
+		// SwitchTurn();
+	 //    PlaceCard(false, new OperatorCard() { Type = OperatorType.Divide });
+	 //    SwitchTurn();
+	 //    PlaceCard(true, new NumberCard { Number = 5 });
+	 //    SwitchTurn();
+	 //    PlaceCard(false, new NumberCard { Number = 2 });
+	 //    SwitchTurn();
+	}
 
-	    PlaceCard(true, new NumberCard { Number = 1 });
-		SwitchTurn();
-	    PlaceCard(false, new OperatorCard() { Type = OperatorType.Divide });
-	    SwitchTurn();
-	    PlaceCard(true, new NumberCard { Number = 5 });
-	    SwitchTurn();
-	    PlaceCard(false, new NumberCard { Number = 2 });
-	    SwitchTurn();
+	private void OnPlayerCardSelect(Card card)
+	{
+		Debug.Log("Clicked!");
 	}
 }
