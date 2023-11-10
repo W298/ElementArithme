@@ -321,13 +321,13 @@ public class BattleController : MonoBehaviour
 			var v = Mathf.Lerp(20, 5, Mathf.Abs(m_targetNumber - m_currentNumber) / m_biasNumber);
 			SetEnemyHP(GetEnemyHP() - Mathf.FloorToInt(v));
 			
-			m_cg.player.Attack();
+			m_cg.newPlayer.Attack();
 			m_cg.enemyGameObj.GetComponent<Character>().Hit();
 		}
 		else
 		{
 			SetPlayerHP(GetPlayerHP() - 10);
-			m_cg.player.Hit();
+			m_cg.newPlayer.Hit();
 			m_cg.enemyGameObj.GetComponent<Character>().Attack();
 		}
 	}
