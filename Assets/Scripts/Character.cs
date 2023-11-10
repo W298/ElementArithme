@@ -17,11 +17,11 @@ public class Character : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (anim.GetBool("IsAttack") && timer > 0.2f)
+        if (anim.GetBool("IsAttack") && timer > 0.5f)
         {
             anim.SetBool("IsAttack", false);
         }
-        if (anim.GetBool("IsHit") && timer > 0.2f)
+        if (anim.GetBool("IsHit") && timer > 0.5f)
         {
             anim.SetBool("IsHit", false);
         }

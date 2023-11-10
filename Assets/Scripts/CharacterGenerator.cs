@@ -8,11 +8,13 @@ public class CharacterGenerator : MonoBehaviour
     public GameObject enemyGameObj;
     
     public Character[] characterList = new Character[6];
+
+    public Character newPlayer;
     void Start()
     {
         int rand = Random.Range(0, 6);
-       
-        Instantiate(player.gameObject,  new Vector2(-4.5f, 2.5f), Quaternion.identity);
+
+        newPlayer = Instantiate(player.gameObject,  new Vector2(-4.5f, 2.5f), Quaternion.identity).GetComponent<Character>();
         enemyGameObj = Instantiate(characterList[rand].gameObject, new Vector2(5.5f, 1.2f), Quaternion.identity);
         if (rand < 4)
         {
