@@ -39,7 +39,7 @@ public class StageButton : MonoBehaviour
                 //SceneManager.LoadScene("");
                 break;
             case StageType.Store:
-                //SceneManager.LoadScene("");
+                SceneManager.LoadScene("StoreScene");
                 break;
             case StageType.BossBattle:
                 //SceneManager.LoadScene("");
